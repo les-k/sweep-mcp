@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sweep-mcp"
+version = "0.1.0"
+description = "An MCP server that can delete directories, and the guard rails that make that acceptable"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Leslie Kadenge" }]
+keywords = ["mcp", "model-context-protocol", "agent-security", "disk-space", "sweep"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Security",
+]
+dependencies = [
+    "mcp>=2.0",
+    # Pinned to the repository, not the name. An unrelated project by another
+    # author already holds "sweep-cli" on PyPI and does much the same thing, so
+    # resolving this dependency by name would install someone else's package
+    # and import a different scan(). Naming the source removes the ambiguity.
+    "sweep-cli @ git+https://github.com/les-k/sweep@main",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.6"]
+
+[project.scripts]
+sweep-mcp = "sweep_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/les-k/sweep-mcp"
+Issues = "https://github.com/les-k/sweep-mcp/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# No JavaScript ships here, so there are no source maps to leak. The exclusion
+# is declared anyway: it costs nothing, and it keeps a supply-chain scanner's
+# checklist honest rather than arguing with it.
+[tool.setuptools.exclude-package-data]
+"*" = ["*.map", "*.pyc", "*.pyo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
