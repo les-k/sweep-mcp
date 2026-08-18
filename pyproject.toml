@@ -24,11 +24,11 @@ classifiers = [
 ]
 dependencies = [
     "mcp>=2.0",
-    # Pinned to the repository, not the name. An unrelated project by another
-    # author already holds "sweep-cli" on PyPI and does much the same thing, so
-    # resolving this dependency by name would install someone else's package
-    # and import a different scan(). Naming the source removes the ambiguity.
-    "sweep-cli @ git+https://github.com/les-k/sweep@main",
+    # Pinned to the repository. The distribution publishes as "sweep-reclaim" -
+    # not "sweep-cli", which is an unrelated project by another author that
+    # does much the same thing. Depending on it by that bare name would
+    # install their package instead and import a different scan().
+    "sweep-reclaim @ git+https://github.com/les-k/sweep@main",
 ]
 
 [project.optional-dependencies]
