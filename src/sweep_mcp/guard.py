@@ -182,10 +182,18 @@ class Guard:
         stale scan would follow it. Every property is therefore checked again
         here, against the filesystem as it is now.
         """
-        path = self.contain(ticket.path)
+        # is_link runs on the ticket's own path, before containment resolves
+        # anything. contain() calls Path.resolve(), which follows a symlink to
+        # its destination and returns *that* — so checking is_link afterwards
+        # inspects wherever the link points, not the link itself. A swap aimed
+        # at another real target inside an allowed root would resolve cleanly,
+        # pass containment, and reach the marker check as if it were the
+        # original find. Checking here, on the unresolved path, is what makes
+        # a swap a link no matter where it leads.
+        if is_link(ticket.path):
+            raise Denied(f"{ticket.path} is now a link; it was a directory when scanned")
 
-        if is_link(path):
-            raise Denied(f"{path} is now a link; it was a directory when scanned")
+        path = self.contain(ticket.path)
 
         if not path.exists():
             raise Denied(f"{path} no longer exists")

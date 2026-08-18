@@ -216,6 +216,41 @@ def test_revalidate_refuses_a_directory_swapped_for_a_symlink(
     assert (outside / "thesis.txt").exists(), "the guard must not have followed the link"
 
 
+def test_revalidate_refuses_a_swap_aimed_inside_the_root(
+    workspace: Path, symlinks_allowed: bool, make_node_project
+):
+    """The swap the previous test does not cover.
+
+    The first swap test aims the replacement symlink *outside* the root, where
+    contain() denies it before is_link() is ever reached - the right outcome,
+    reached because resolve() happens to land somewhere already forbidden.
+
+    Here the replacement is aimed at a second, real node_modules that also
+    lives inside the same allowed root. contain() resolves the link, finds the
+    destination is legitimately in-bounds, and returns *that* path - so a
+    link check running after containment would inspect the target, not the
+    link, and the marker check downstream would find real markers and approve
+    the delete. This is the case that forces is_link() to run on the ticket's
+    own path before contain() ever resolves through it.
+    """
+    if not symlinks_allowed:
+        pytest.skip("this process cannot create symlinks")
+
+    guard = Guard([workspace])
+    ticket = guard.issue(scan([workspace]).finds)[0]
+
+    decoy = make_node_project(workspace, name="decoy")
+    assert decoy != ticket.path
+
+    shutil.rmtree(ticket.path)
+    os.symlink(decoy, ticket.path, target_is_directory=True)
+
+    with pytest.raises(Denied, match="is now a link"):
+        guard.revalidate(ticket)
+
+    assert decoy.exists(), "the guard must not have deleted the decoy it was swapped for"
+
+
 def test_revalidate_refuses_a_target_not_enabled_on_this_server(workspace: Path):
     guard = Guard([workspace])
     ticket = guard.issue(scan([workspace]).finds)[0]
