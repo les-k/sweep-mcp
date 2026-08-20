@@ -1,5 +1,11 @@
 # sweep-mcp
 
+> **In plain terms:** this lets an AI clear out the junk folders that pile up
+> on a developer's machine, and makes it incapable of touching anything else. It
+> works only inside folders you name, only deletes things it found itself, and
+> checks again in the instant before deleting — so nothing can be swapped in at
+> the last second.
+
 An MCP server that deletes directories — and the guard rails that make handing
 that capability to a language model something other than reckless.
 
