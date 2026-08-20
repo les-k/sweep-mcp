@@ -1,5 +1,9 @@
 # sweep-mcp
 
+[![CI](https://github.com/les-k/sweep-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/les-k/sweep-mcp/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.13-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 > **In plain terms:** this lets an AI clear out the junk folders that pile up
 > on a developer's machine, and makes it incapable of touching anything else. It
 > works only inside folders you name, only deletes things it found itself, and
